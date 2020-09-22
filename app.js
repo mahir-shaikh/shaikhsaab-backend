@@ -1,15 +1,16 @@
+const PORT = process.env.PORT || 9999;
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 
-const details = require('./config.json');
+require('dotenv').config()
 
 const app = express();
 app.use(cors({origin: '*'}));
 app.use(bodyParser.json());
 
-app.listen(9999, ()=>{
+app.listen(PORT, ()=>{
     console.log("Server started on port 9999")
 })
 
@@ -18,10 +19,6 @@ app.get("/",(req, res)=>{
         "<h1 style='text-align:center'>Things are looking good!!!</h1>"
     );
 })
-
-
-
-
 
 app.post("/sendmail", (req, res)=>{
     let data = req.body
@@ -36,8 +33,8 @@ async function sendMail(data, callback){
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: details.email,
-          pass: details.pwd
+          user: process.env.EMAIL,
+          pass: process.env.PASSWORD
         }
     });
 
