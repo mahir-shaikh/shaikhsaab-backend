@@ -1,4 +1,3 @@
 {
-    "email": "",
-    "pwd": ""
+    "MongoURL": "mongodb://localhost:27017/posts"
 }
