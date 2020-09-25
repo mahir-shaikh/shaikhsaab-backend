@@ -23,7 +23,13 @@ const PostSchema = new Schema({
     allowComments:{
         type: Boolean,
         default: false
-    }
+    },
+    comments: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'comments'
+        }
+    ]
 })
 
 module.exports = mongoose.model( 'posts', PostSchema)
