@@ -71,6 +71,7 @@ mongoose.connect(MongoDBURL, { useUnifiedTopology: true, useNewUrlParser: true }
 }).catch((err) => {
     console.log("MongoDB Connecttion failed:", err);
 })
+// Blog posts
 var POST = require('./models/PostModel')
 app.post('/newpost', (req, res) => {
     var post = new POST({
@@ -90,16 +91,22 @@ app.post('/newpost', (req, res) => {
 })
 
 app.get('/getAllPosts', (req, res) => {
-    POST.find().then(posts => {
-        res.send(posts)
-    })
+    POST.find()
+        .populate({path: 'comments', model: 'comments'}) //Update comments array with actual comments
+        .then(posts => {
+            console.log(posts)
+            res.send(posts)
+        })
 })
 
-app.post('/getPost', withAuthentication, (req, res) => {
+app.post('/getPost', (req, res) => {
     const id = req.body.id
-    POST.findById(id).then(posts => {
-        res.send(posts)
-    })
+    POST.findById(id)
+        .populate({path: 'comments', model: 'comments'})
+        .then(posts => {
+            console.log(posts)
+            res.send(posts)
+        })
 })
 
 app.post('/editPost', withAuthentication, (req, res) => {
@@ -122,6 +129,52 @@ app.post('/deletePost', withAuthentication, (req, res) => {
 
     }).catch((err) => {
         res.send({ success: false, response: err })
+    })
+})
+// Comments
+var COMMENTS = require('./models/CommentModel')
+app.post('/postComment', (req, res)=>{
+    const postID = req.body.postID
+    POST.findById(postID).then((post)=>{
+        if(post){
+            var comment = new COMMENTS({
+                name: req.body.name,
+                body: req.body.comment
+            })
+
+            //Add comment on that particular post
+            post.comments.push(comment);
+            post.save().then((postDaved)=>{
+                //Push in comments DB
+                comment.save().then((commentSaved)=>{
+                    res.send({success: true})
+                })
+            })
+        }
+    }).catch(()=>{
+        //No such post
+        res.sendStatus(404)
+    })
+})
+
+app.get('/fetchComments', (req, res)=>{
+    const postID = req.body.postID
+    POST.findById(postID).then((post)=>{
+        if(post){
+
+
+            //Add comment on that particular post
+            post.comments.push(comment);
+            post.save().then((postDaved)=>{
+                //Push in comments DB
+                comment.save().then((commentSaved)=>{
+                    res.send({success: true})
+                })
+            })
+        }
+    }).catch(()=>{
+        //No such post
+        res.sendStatus(404)
     })
 })
 
