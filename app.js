@@ -84,9 +84,9 @@ app.post('/newpost', (req, res) => {
     })
 
     post.save().then((info) => {
-        res.send({ success: true, response: info })
+        res.send({ success: true, message: "Post Created Successfully", response: info })
     }).catch((err) => {
-        res.send({ success: false, response: err })
+        res.send({ success: false, message: "Error occurred while creating the post", response: err })
     })
 })
 
@@ -94,7 +94,6 @@ app.get('/getAllPosts', (req, res) => {
     POST.find()
         .populate({path: 'comments', model: 'comments'}) //Update comments array with actual comments
         .then(posts => {
-            console.log(posts)
             res.send(posts)
         })
 })
@@ -104,7 +103,6 @@ app.post('/getPost', (req, res) => {
     POST.findById(id)
         .populate({path: 'comments', model: 'comments'})
         .then(posts => {
-            console.log(posts)
             res.send(posts)
         })
 })
@@ -112,13 +110,10 @@ app.post('/getPost', (req, res) => {
 app.post('/editPost', withAuthentication, (req, res) => {
     const id = req.body.id
     const data = req.body.post;
-    POST.findById(id).then(post => {
-        post.overwrite(data)
-        post.save().then((info) => {
-            res.send({ success: true, response: info })
-        }).catch((err) => {
-            res.send({ success: false, response: err })
-        })
+    POST.findByIdAndUpdate(id, data).then(post => {
+        res.send({ success: true, message: "Post updated Successfully" , response: post })
+    }).catch((err) => {
+        res.send({ success: false, message: "Error occurred while updating the post" , response: err })
     })
 })
 
@@ -178,6 +173,31 @@ app.get('/fetchComments', (req, res)=>{
     })
 })
 
+app.post('/editComment', withAuthentication, (req, res) => {
+    const id = mongoose.Types.ObjectId(req.body.id)
+    const data = req.body.comment;
+    COMMENTS.findByIdAndUpdate(id, data).then(comment => {
+        comment.save().then((info) => {
+            res.send({ success: true, message: 'Comment updated successfully',  response: info })
+        }).catch((err) => {
+            res.send({ success: false, message: 'Error occured', response: err })
+        })
+    })
+})
+
+app.post('/deleteComment', withAuthentication, (req, res) => {
+    const id = mongoose.Types.ObjectId(req.body.id)
+    //Remove from comments array of the post
+    //Need to write query to Remove from comments array of the post 
+
+    //Remove from comments model
+    COMMENTS.findByIdAndDelete(id).then(comment => {
+        res.send({ success: true, message: 'Comment deleted successfully',  response: comment })
+    }).catch((err) => {
+        console.log(err)
+        res.send({ success: false, message: 'Error occured', response: err })
+    })
+})
 
 //Authentication Services
 app.post('/login', (req, res)=>{
@@ -185,7 +205,7 @@ app.post('/login', (req, res)=>{
             password = req.body.password;
 
     // TODO: Check username and password in MongoDB
-    if(username == process.env.ADMIN_PANEL_USERNAME && password == process.env.ADMIN_PANEL_USERNAME){
+    if(username == process.env.ADMIN_PANEL_USERNAME && password == process.env.ADMIN_PANEL_PASSWORD){
         const userID = "732798127398173"// findUserIdForEmail(usernmae)   fetch unique ID for that user from mongo; Random for now
 
         let options = {
