@@ -13,13 +13,20 @@ const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const uuid = require('node-uuid');
 const SECRET_KEY = 'Wow.MoreOfAPassphraseThanAnActualPassword';
+//Upload Services
+const multer = require('multer');
+const imageUploadFolder = 'uploads/images/';
+const fs = require('fs');
+var publicDir = require('path').join(__dirname,'/uploads'); 
 
 require('dotenv').config()
 
 const app = express();
 app.use(cors({ origin: '*' }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cookieParser());
+app.use(express.static(publicDir)); 
+
 
 app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`)
@@ -92,7 +99,7 @@ app.post('/newpost', (req, res) => {
 
 app.get('/getAllPosts', (req, res) => {
     POST.find()
-        .populate({path: 'comments', model: 'comments'}) //Update comments array with actual comments
+        .populate({ path: 'comments', model: 'comments' }) //Update comments array with actual comments
         .then(posts => {
             res.send(posts)
         })
@@ -101,7 +108,7 @@ app.get('/getAllPosts', (req, res) => {
 app.post('/getPost', (req, res) => {
     const id = req.body.id
     POST.findById(id)
-        .populate({path: 'comments', model: 'comments'})
+        .populate({ path: 'comments', model: 'comments' })
         .then(posts => {
             res.send(posts)
         })
@@ -111,9 +118,9 @@ app.post('/editPost', withAuthentication, (req, res) => {
     const id = req.body.id
     const data = req.body.post;
     POST.findByIdAndUpdate(id, data).then(post => {
-        res.send({ success: true, message: "Post updated Successfully" , response: post })
+        res.send({ success: true, message: "Post updated Successfully", response: post })
     }).catch((err) => {
-        res.send({ success: false, message: "Error occurred while updating the post" , response: err })
+        res.send({ success: false, message: "Error occurred while updating the post", response: err })
     })
 })
 
@@ -128,10 +135,10 @@ app.post('/deletePost', withAuthentication, (req, res) => {
 })
 // Comments
 var COMMENTS = require('./models/CommentModel')
-app.post('/postComment', (req, res)=>{
+app.post('/postComment', (req, res) => {
     const postID = req.body.postID
-    POST.findById(postID).then((post)=>{
-        if(post){
+    POST.findById(postID).then((post) => {
+        if (post) {
             var comment = new COMMENTS({
                 name: req.body.name,
                 body: req.body.comment
@@ -139,35 +146,35 @@ app.post('/postComment', (req, res)=>{
 
             //Add comment on that particular post
             post.comments.push(comment);
-            post.save().then((postDaved)=>{
+            post.save().then((postDaved) => {
                 //Push in comments DB
-                comment.save().then((commentSaved)=>{
-                    res.send({success: true})
+                comment.save().then((commentSaved) => {
+                    res.send({ success: true })
                 })
             })
         }
-    }).catch(()=>{
+    }).catch(() => {
         //No such post
         res.sendStatus(404)
     })
 })
 
-app.get('/fetchComments', (req, res)=>{
+app.get('/fetchComments', (req, res) => {
     const postID = req.body.postID
-    POST.findById(postID).then((post)=>{
-        if(post){
+    POST.findById(postID).then((post) => {
+        if (post) {
 
 
             //Add comment on that particular post
             post.comments.push(comment);
-            post.save().then((postDaved)=>{
+            post.save().then((postDaved) => {
                 //Push in comments DB
-                comment.save().then((commentSaved)=>{
-                    res.send({success: true})
+                comment.save().then((commentSaved) => {
+                    res.send({ success: true })
                 })
             })
         }
-    }).catch(()=>{
+    }).catch(() => {
         //No such post
         res.sendStatus(404)
     })
@@ -178,7 +185,7 @@ app.post('/editComment', withAuthentication, (req, res) => {
     const data = req.body.comment;
     COMMENTS.findByIdAndUpdate(id, data).then(comment => {
         comment.save().then((info) => {
-            res.send({ success: true, message: 'Comment updated successfully',  response: info })
+            res.send({ success: true, message: 'Comment updated successfully', response: info })
         }).catch((err) => {
             res.send({ success: false, message: 'Error occured', response: err })
         })
@@ -192,7 +199,7 @@ app.post('/deleteComment', withAuthentication, (req, res) => {
 
     //Remove from comments model
     COMMENTS.findByIdAndDelete(id).then(comment => {
-        res.send({ success: true, message: 'Comment deleted successfully',  response: comment })
+        res.send({ success: true, message: 'Comment deleted successfully', response: comment })
     }).catch((err) => {
         console.log(err)
         res.send({ success: false, message: 'Error occured', response: err })
@@ -200,12 +207,12 @@ app.post('/deleteComment', withAuthentication, (req, res) => {
 })
 
 //Authentication Services
-app.post('/login', (req, res)=>{
+app.post('/login', (req, res) => {
     const username = req.body.username,
-            password = req.body.password;
+        password = req.body.password;
 
     // TODO: Check username and password in MongoDB
-    if(username == process.env.ADMIN_PANEL_USERNAME && password == process.env.ADMIN_PANEL_PASSWORD){
+    if (username == process.env.ADMIN_PANEL_USERNAME && password == process.env.ADMIN_PANEL_PASSWORD) {
         const userID = "732798127398173"// findUserIdForEmail(usernmae)   fetch unique ID for that user from mongo; Random for now
 
         let options = {
@@ -222,7 +229,7 @@ app.post('/login', (req, res)=>{
         }
 
         // res.cookie("SESSIONID", token, {httpOnly:true, secure:true});
-        res.send({success: true, LoginResult})
+        res.send({ success: true, LoginResult })
 
         // const jwtBearerToken = jwt.sign({}, RSA_PRIVATE_KEY, {
         //     algorithm: 'RS256',
@@ -242,22 +249,22 @@ app.post('/login', (req, res)=>{
         //     idToken: jwtBearerToken, 
         //     expiresIn: 120
         // });
-    
-    } else{
-        res.send({errorCode: 203, success: false, message: "Invalid username or password"})
+
+    } else {
+        res.send({ errorCode: 203, success: false, message: "Invalid username or password" })
     }
 })
 
-function ValidateAccess(token){
+function ValidateAccess(token) {
     return new Promise((resolve, reject) => {
         try {
-            let decoded = jwt.verify(token, SECRET_KEY, { algorithms: ["HS256"]})
+            let decoded = jwt.verify(token, SECRET_KEY, { algorithms: ["HS256"] })
             resolve(decoded);
         } catch (err) {
             reject(err);
         }
     });
-} 
+}
 
 function withAuthentication(req, res, next) {
     console.log('withAuthentication')
@@ -281,3 +288,76 @@ function withAuthentication(req, res, next) {
             res.status(401).send(errNoAccess);
         });
 }
+
+//Upload Services
+
+let storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, imageUploadFolder);
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname)
+    }
+});
+
+let upload = multer({
+    storage: storage
+});
+
+// let upload = multer({dest: imageUploadFolder})
+
+// fs.readdir(imageUploadFolder, (err, files) => {
+//   files.forEach(file => {
+//     console.log(file);
+//   });
+// });
+
+// POST File
+app.post('/uploadImages', upload.array('files'), function (req, res) {
+    const files = req.files;
+    console.log(files)
+    if (!files) {
+        console.log("No file is available!");
+        return res.send({
+            success: false,
+            message: "No image selected"
+        });
+
+    } else {
+        console.log('File is available!');
+        return res.send({
+            success: true,
+            message: "Image uploaded successfully",
+            data: files
+        })
+    }
+});
+
+app.post('/deleteImage', (req, res) => {
+    let path = req.body.path
+    fs.unlink(path, (err)=>{
+        if(err){
+            res.send({
+                success: true,
+                message: "Unable to delete file",
+                error: err
+            })
+            return
+        }
+
+        res.send({
+            success: true,
+            message: "File deleted successfully"
+        })
+    })
+});
+
+app.get('/getAllImages',(req, res)=>{
+    fs.readdir(imageUploadFolder, (err, files) => {
+        let all = files.map((file)=>{
+            return imageUploadFolder+file;
+        })
+        res.send(all)
+    });
+})
+app.use('/uploads', express.static('uploads'));
