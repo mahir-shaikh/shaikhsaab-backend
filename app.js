@@ -338,7 +338,7 @@ app.post('/deleteImage', (req, res) => {
     fs.unlink(path, (err)=>{
         if(err){
             res.send({
-                success: true,
+                success: false,
                 message: "Unable to delete file",
                 error: err
             })
