@@ -18,6 +18,9 @@ const multer = require('multer');
 const imageUploadFolder = 'uploads/images/';
 const fs = require('fs');
 var publicDir = require('path').join(__dirname,'/uploads'); 
+//JSON CRUD Operations
+//fs already imported
+const experienceJsonPath = 'uploads/data/Experience.json';
 
 require('dotenv').config()
 
@@ -290,7 +293,6 @@ function withAuthentication(req, res, next) {
 }
 
 //Upload Services
-
 let storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, imageUploadFolder);
@@ -361,3 +363,94 @@ app.get('/getAllImages',(req, res)=>{
     });
 })
 app.use('/uploads', express.static('uploads'));
+
+
+//JSON CRUD Operations
+
+// helper methods
+function readFile(callback, filePath = dataPath, returnJson = false, encoding = 'utf8'){
+    fs.readFile(filePath, encoding, (err, data) => {
+        if (err) {
+            throw err;
+        }
+
+        callback(returnJson ? JSON.parse(data) : data);
+    });
+};
+
+function writeFile(fileData, filePath = dataPath, callback, encoding = 'utf8'){
+    fs.writeFile(filePath, fileData, encoding, (err) => {
+        if (err) {
+            throw err;
+        }
+        callback();
+    });
+};
+
+// READ
+app.get('/getExperience', (req, res) => {
+    fs.readFile(experienceJsonPath, 'utf8', (err, data) => {
+        if (err) {
+            throw err;
+        }
+
+        res.send(JSON.parse(data));
+    });
+});
+//WRITE
+app.post('/postExperience', withAuthentication, (req, res) => {
+    const data = req.body
+    writeFile(JSON.stringify(data, null, 2), experienceJsonPath ,(x) => {
+        res.send({
+            success: true,
+            message: "JSON updated successfully"
+        })
+    });
+});
+
+// CREATE
+// app.post('/addNewExperience', (req, res) => {
+
+//     readFile((data) => {
+//         // const newExpId = Object.keys(data).length + 1;
+
+//         // add the new user
+//         data.push(req.body);
+
+//         writeFile(JSON.stringify(data, null, 2), () => {
+//             res.status(200).send('new exp added');
+//         });
+//     },experienceJsonPath, true);
+// });
+
+
+// // UPDATE
+// app.put('/updateExperience/:id', (req, res) => {
+
+//     readFile((data) => {
+
+//         // add the new user
+//         const userId = req.params["id"];
+//         data[userId] = req.body;
+
+//         writeFile(JSON.stringify(data, null, 2), () => {
+//             res.status(200).send(`users id:${userId} updated`);
+//         });
+//     },experienceJsonPath, true);
+// });
+
+
+// // DELETE
+// app.delete('/deleteExperience/:id', (req, res) => {
+
+//     readFile(data => {
+
+//         // add the new user
+//         const userId = req.params["id"];
+//         delete data[userId];
+
+//         writeFile(JSON.stringify(data, null, 2), () => {
+//             res.status(200).send(`users id:${userId} removed`);
+//         });
+//     },experienceJsonPath, true);
+// });

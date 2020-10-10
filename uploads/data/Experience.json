@@ -1,0 +1,148 @@
+[
+  {
+    "id": "1",
+    "name": "Quarry",
+    "role": "Digital Marketing Intern",
+    "description": "",
+    "websiteUrl": "http://www.quarry.asia/",
+    "bg_img": "uploads/images/logo_quarry.png",
+    "demo_links": []
+  },
+  {
+    "id": "2",
+    "name": "Cenagage",
+    "role": "Software Developer",
+    "description": "",
+    "websiteUrl": "https://www.cengage.co.in/",
+    "bg_img": "uploads/images/logo_cengage.svg",
+    "demo_links": []
+  },
+  {
+    "id": "3",
+    "name": "Santen",
+    "role": "design + Css / html + coding",
+    "description": "",
+    "websiteUrl": "http://www.santen.com/en/",
+    "bg_img": "uploads/images/logo_santen.svg",
+    "demo_links": []
+  },
+  {
+    "id": "4",
+    "name": "Takeda",
+    "role": "design + Css / html + coding",
+    "description": "",
+    "websiteUrl": "https://www.takeda.com/",
+    "bg_img": "uploads/images/logo_santen.svg",
+    "demo_links": []
+  },
+  {
+    "id": "5",
+    "name": "Carlsberg",
+    "role": "design + Css / html + coding",
+    "description": "",
+    "websiteUrl": "http://www.carlsberg.com/",
+    "bg_img": "uploads/images/logo_carlsberg.png",
+    "demo_links": []
+  },
+  {
+    "id": "6",
+    "name": "Autodesk",
+    "role": "design + Css / html + coding",
+    "description": "",
+    "websiteUrl": "https://www.autodesk.in/",
+    "bg_img": "uploads/images/logo_autodesk.png",
+    "demo_links": []
+  },
+  {
+    "id": "7",
+    "name": "Microsoft MACH",
+    "role": "design + Css / html + coding",
+    "description": "",
+    "websiteUrl": "https://www.microsoft.com/en-in",
+    "bg_img": "uploads/images/logo_microsoft.png",
+    "demo_links": []
+  },
+  {
+    "id": "8",
+    "name": "Salesforce",
+    "role": "design + Css / html + coding",
+    "description": "",
+    "websiteUrl": "https://www.salesforce.com/",
+    "bg_img": "uploads/images/logo_salesforce.png",
+    "demo_links": []
+  },
+  {
+    "id": "9",
+    "name": "Avanade",
+    "role": "design + Css / html + coding",
+    "description": "",
+    "websiteUrl": "https://www.avanade.com/en",
+    "bg_img": "uploads/images/logo_avanade.svg",
+    "demo_links": []
+  },
+  {
+    "id": "10",
+    "name": "Chevron",
+    "role": "design + Css / html + coding",
+    "description": "",
+    "websiteUrl": "https://www.chevron.com/",
+    "bg_img": "uploads/images/logo_chevron.svg",
+    "demo_links": []
+  },
+  {
+    "id": "11",
+    "name": "PepsiCo",
+    "role": "design + Css / html + coding",
+    "description": "",
+    "websiteUrl": "https://www.pepsico.com/",
+    "bg_img": "uploads/images/logo_pepsico.png",
+    "demo_links": [
+      "https://drive.google.com/open?id=16zfaDXwqqnetlVp9Kmc06GFe9MvTC0sG"
+    ]
+  },
+  {
+    "id": "12",
+    "name": "Franklin Templeton",
+    "role": "design + Css / html + coding",
+    "description": "",
+    "websiteUrl": "https://www.franklintempleton.com/",
+    "bg_img": "uploads/images/logo_fti.png",
+    "demo_links": []
+  },
+  {
+    "id": "13",
+    "name": "EY",
+    "role": "design + Css / html + coding",
+    "description": "",
+    "websiteUrl": "https://www.ey.com/en_gl",
+    "bg_img": "uploads/images/logo_ey.png",
+    "demo_links": []
+  },
+  {
+    "id": "14",
+    "name": "PWC",
+    "role": "design + Css / html + coding",
+    "description": "",
+    "websiteUrl": "https://www.pwc.in/",
+    "bg_img": "uploads/images/logo_pwc.png",
+    "demo_links": []
+  },
+  {
+    "id": "15",
+    "name": "EY",
+    "role": "design + Css / html + coding",
+    "description": "",
+    "websiteUrl": "https://www.ey.com/en_gl",
+    "bg_img": "uploads/images/logo_ey.png",
+    "demo_links": []
+  },
+  {
+    "id": "16",
+    "name": "BoozAllenH",
+    "role": "design + Css / html + coding",
+    "description": "",
+    "websiteUrl": "https://www.boozallen.com",
+    "bg_img": "uploads/images/logo_bah.svg",
+    "demo_links": []
+  }
+]
