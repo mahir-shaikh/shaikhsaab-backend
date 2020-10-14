@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 //DB/CMS
 const mongoose = require('mongoose');
-const MongoDBURL = details.MongoURL;
+const MongoDBURL = process.env.MongoURL || details.MongoURL //|| "mongodb://localhost:27017/shaikhsaab-blog";
 //Auth
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
@@ -389,6 +389,7 @@ function writeFile(fileData, filePath = dataPath, callback, encoding = 'utf8'){
 
 // READ
 app.get('/getExperience', (req, res) => {
+    console.log(req)
     fs.readFile(experienceJsonPath, 'utf8', (err, data) => {
         if (err) {
             throw err;
