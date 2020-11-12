@@ -17,6 +17,7 @@ const SECRET_KEY = 'Wow.MoreOfAPassphraseThanAnActualPassword';
 const multer = require('multer');
 const imageUploadFolder = 'uploads/images/';
 const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
 var publicDir = require('path').join(__dirname,'/uploads'); 
 //JSON CRUD Operations
 //fs already imported
@@ -306,6 +307,32 @@ let upload = multer({
     storage: storage
 });
 
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+})
+
+const cloudinaryuploads = (file, folder) => {
+    return new Promise(resolve => {
+        cloudinary.uploader.upload(file, {
+            resource_type: "auto",
+            folder: folder,
+            use_filename: true,
+            overwrite: true,
+            unique_filename: false
+        }).then((result) => {
+            resolve({
+                url: result.url,
+                id: result.public_id
+            })
+        })
+    })
+}
+
+const uploader = async (path) => await cloudinaryuploads(path, 'images');
+
+
 // let upload = multer({dest: imageUploadFolder})
 
 // fs.readdir(imageUploadFolder, (err, files) => {
@@ -315,6 +342,25 @@ let upload = multer({
 // });
 
 // POST File
+// this method will store files in cloudinary
+app.post('/uploadImagesOnCloud', upload.array('files'), async function (req, res) {
+    const urls = []
+    const files = req.files;
+    for (const file of files) {
+      const { path } = file;
+      const newPath = await uploader(path)
+      urls.push(newPath)
+      fs.unlinkSync(path)
+      console.log(urls)
+    }
+
+    res.status(200).json({
+      message: 'images uploaded successfully',
+      data: urls
+    })
+});
+
+// This method stores file in nodejs folder
 app.post('/uploadImages', upload.array('files'), function (req, res) {
     const files = req.files;
     console.log(files)
@@ -335,6 +381,8 @@ app.post('/uploadImages', upload.array('files'), function (req, res) {
     }
 });
 
+
+// This method deletes file from nodejs folder
 app.post('/deleteImage', (req, res) => {
     let path = req.body.path
     fs.unlink(path, (err)=>{
@@ -353,7 +401,27 @@ app.post('/deleteImage', (req, res) => {
         })
     })
 });
+// this method will delete files from cloudinary
+app.post('/deleteImageFromCloud', (req, res) => {
+    let publicId = req.body.path
+    cloudinary.uploader.destroy(publicId, {}, (err)=>{
+        if(err){
+            res.send({
+                success: false,
+                message: "Unable to delete file",
+                error: err
+            })
+            return
+        }
 
+        res.send({
+            success: true,
+            message: "File deleted successfully"
+        })
+    });
+});
+
+//This method will get all images from nodejs folder
 app.get('/getAllImages',(req, res)=>{
     fs.readdir(imageUploadFolder, (err, files) => {
         let all = files.map((file)=>{
@@ -362,6 +430,20 @@ app.get('/getAllImages',(req, res)=>{
         res.send(all)
     });
 })
+//This method will get all images from cloudinary
+app.get('/getAllImagesFromCloud',(req, res)=>{
+    cloudinary.api.resources({
+        type: 'upload',
+        prefix: 'images/',
+        max_results: 500
+    }, 
+    function(error, result){
+        console.log('getAllImagesFromCloud - err', error)
+        console.log('getAllImagesFromCloud - result', result)
+        res.send(result)
+    });
+})
+
 app.use('/uploads', express.static('uploads'));
 
 
