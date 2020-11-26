@@ -4,7 +4,7 @@ const express = require('express');
 //Mail
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const nodemailer = require('nodemailer');
+const mail = require('./mail/mail.js')
 //DB/CMS
 const mongoose = require('mongoose');
 const MongoDBURL = process.env.MongoURL || details.MongoURL //|| "mongodb://localhost:27017/shaikhsaab-blog";
@@ -42,39 +42,7 @@ app.get("/", (req, res) => {
     );
 })
 //EMAIL SERVICE
-app.post("/sendmail", (req, res) => {
-    let data = req.body
-    sendMail(data, info => {
-        console.log('INFO in post', info)
-        res.send(info)
-    })
-
-})
-
-async function sendMail(data, callback) {
-    let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL,
-            pass: process.env.PASSWORD
-        }
-    });
-
-    var mailOptions = {
-        from: data.email,
-        to: 'mahirthebest95@gmail.com',
-        subject: data.name + ' is trying to contact you from using your website...',
-        html: '<b>Name:</b> ' + data.name + '<br><b>Email:</b> ' + data.email + '<br><b>Message:</b> ' + data.message
-    };
-
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            callback({ success: false, response: error })
-        } else {
-            callback({ success: true, response: info })
-        }
-    })
-}
+mail(app);
 
 //CMS SERVICES
 mongoose.connect(MongoDBURL, { useUnifiedTopology: true, useNewUrlParser: true }).then(() => {
